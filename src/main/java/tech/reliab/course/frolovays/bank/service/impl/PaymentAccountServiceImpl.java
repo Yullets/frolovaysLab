@@ -9,6 +9,7 @@ import tech.reliab.course.frolovays.bank.service.UserService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 public class PaymentAccountServiceImpl implements PaymentAccountService {
@@ -25,7 +26,13 @@ public class PaymentAccountServiceImpl implements PaymentAccountService {
         this.bankService = bankService;
     }
 
-    // создание платежного аккаунта (Crud)
+    /**
+     * Создание нового платежного аккаунта.
+     *
+     * @param user Пользователь, которому принадлежит аккаунт.
+     * @param bank Банк, в котором открыт аккаунт.
+     * @return Созданный платежный аккаунт.
+     */
     public PaymentAccount createPaymentAccount(User user, Bank bank) {
         PaymentAccount paymentAccount = new PaymentAccount(user, bank);
         paymentAccount.setId(paymentAccountCount++);
@@ -36,38 +43,57 @@ public class PaymentAccountServiceImpl implements PaymentAccountService {
         return paymentAccount;
     }
 
-    // чтение платежного аккаунта (cRud)
+    /**
+     * Чтение платежного аккаунта по его идентификатору.
+     *
+     * @param id Идентификатор платежного аккаунта.
+     * @return Платежный аккаунт, если он найден, иначе - пустой Optional.
+     */
     public Optional<PaymentAccount> getPaymentAccountById(int id) {
         return paymentAccounts.stream()
                 .filter(paymentAccount -> paymentAccount.getId() == id)
                 .findFirst();
     }
 
-    // чтение всех платежных аккаунтов (cRud)
+    /**
+     * Чтение всех платежных аккаунтов.
+     *
+     * @return Список всех платежных аккаунтов.
+     */
     public List<PaymentAccount> getAllPaymentAccounts() {
         return new ArrayList<>(paymentAccounts);
     }
 
-    // обновление платежного аккаунта по id (crUd)
+    /**
+     * Обновление информации о платежном аккаунте по его идентификатору.
+     *
+     * @param id   Идентификатор платежного аккаунта.
+     * @param bank Банк, в котором открыт аккаунт.
+     */
     public void updatePaymentAccount(int id, Bank bank) {
         PaymentAccount paymentAccount = getPaymentAccountIfExists(id);
         paymentAccount.setBank(bank);
     }
 
-    // удаление платежного аккаунта по id (cruD)
+    /**
+     * Удаление платежного аккаунта по его идентификатору.
+     *
+     * @param id Идентификатор платежного аккаунта.
+     */
     public void deletePaymentAccount(int id) {
         PaymentAccount paymentAccount = getPaymentAccountIfExists(id);
         paymentAccounts.remove(paymentAccount);
         userService.deletePaymentAccount(paymentAccount, paymentAccount.getUser());
     }
 
-    // получение юзера по id, если он существует,
-    // иначе - проброс ошибки
+    /**
+     * Получение платежного аккаунта по его идентификатору, если он существует.
+     *
+     * @param id Идентификатор платежного аккаунта.
+     * @return Платежный аккаунт, если он найден.
+     * @throws NoSuchElementException Если платежный аккаунт не найден.
+     */
     private PaymentAccount getPaymentAccountIfExists(int id) {
-        Optional<PaymentAccount> paymentAccountOptional = getPaymentAccountById(id);
-        if(paymentAccountOptional.isEmpty()) {
-            throw new RuntimeException("PaymentAccount was not found");
-        }
-        return paymentAccountOptional.get();
+        return getPaymentAccountById(id).orElseThrow(() -> new NoSuchElementException("PaymentAccount was not found"));
     }
 }

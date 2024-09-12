@@ -9,6 +9,7 @@ import tech.reliab.course.frolovays.bank.service.EmployeeService;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 public class EmployeeServiceImpl implements EmployeeService {
@@ -23,7 +24,19 @@ public class EmployeeServiceImpl implements EmployeeService {
         this.bankService = bankService;
     }
 
-    // создание работника (Crud)
+    /**
+     * Создание нового сотрудника банка.
+     *
+     * @param fullName     Полное имя сотрудника.
+     * @param birthDate    Дата рождения сотрудника.
+     * @param position     Должность сотрудника.
+     * @param bank         Банк, в котором работает сотрудник.
+     * @param remoteWork   Работает ли сотрудник удаленно.
+     * @param bankOffice   Офис, в котором работает сотрудник.
+     * @param canIssueLoans Может ли сотрудник выдавать кредиты.
+     * @param salary       Зарплата сотрудника.
+     * @return Созданный сотрудник банка.
+     */
     public Employee createEmployee(String fullName, LocalDate birthDate, String position, Bank bank, boolean remoteWork,
                                    BankOffice bankOffice, boolean canIssueLoans, double salary) {
         Employee employee = new Employee(fullName, birthDate, position, bank, remoteWork,
@@ -34,36 +47,55 @@ public class EmployeeServiceImpl implements EmployeeService {
         return employee;
     }
 
-    // чтение работника (cRud)
+    /**
+     * Чтение сотрудника по его идентификатору.
+     *
+     * @param id Идентификатор сотрудника.
+     * @return Сотрудник, если он найден, иначе - пустой Optional.
+     */
     public Optional<Employee> getEmployeeById(int id) {
         return employees.stream()
                 .filter(employee -> employee.getId() == id)
                 .findFirst();
     }
 
-    // чтение всех работниов (cRud)
+    /**
+     * Чтение всех сотрудников.
+     *
+     * @return Список всех сотрудников.
+     */
     public List<Employee> getAllEmployees() {
         return new ArrayList<>(employees);
     }
 
-    // обновление работника по id (crUd)
+    /**
+     * Обновление информации о сотруднике по его идентификатору.
+     *
+     * @param id   Идентификатор сотрудника.
+     * @param name Новое имя сотрудника.
+     */
     public void updateEmployee(int id, String name) {
         Employee employee = getEmployeeIfExists(id);
         employee.setFullName(name);
     }
 
-    // удаление работника по id (cruD)
+    /**
+     * Удаление сотрудника по его идентификатору.
+     *
+     * @param id Идентификатор сотрудника.
+     */
     public void deleteEmployee(int id) {
         employees.remove(getEmployeeIfExists(id));
     }
 
-    // получение работника по id, если он существует,
-    // иначе - проброс ошибки
+    /**
+     * Получение сотрудника по его идентификатору, если он существует.
+     *
+     * @param id Идентификатор сотрудника.
+     * @return Сотрудник, если он найден.
+     * @throws NoSuchElementException Если сотрудник не найден.
+     */
     public Employee getEmployeeIfExists(int id) {
-        Optional<Employee> employeeOptional = getEmployeeById(id);
-        if(employeeOptional.isEmpty()) {
-            throw new RuntimeException("EmployeeOptional was not found");
-        }
-        return employeeOptional.get();
+        return getEmployeeById(id).orElseThrow(() -> new NoSuchElementException("Employee was not found"));
     }
 }

@@ -6,6 +6,7 @@ import tech.reliab.course.frolovays.bank.service.UserService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Random;
 
@@ -25,7 +26,12 @@ public class BankServiceImpl implements BankService {
         this.userService = userService;
     }
 
-    // создание банка (Crud)
+    /**
+     * Создание нового банка.
+     *
+     * @param bankName Название банка.
+     * @return Созданный банк.
+     */
     public Bank createBank(String bankName) {
         Bank bank = new Bank(bankName);
         bank.setId(banksCount++);
@@ -36,93 +42,156 @@ public class BankServiceImpl implements BankService {
         return bank;
     }
 
-    // генерация рейтинга банка
+    /**
+     * Генерация случайного рейтинга банка.
+     *
+     * @return Случайный рейтинг банка.
+     */
     private int generateRating() {
         return new Random().nextInt(RATING_BOUND);
     }
 
-    // генерация всех денег банка
+    /**
+     * Генерация случайного количества денег в банке.
+     *
+     * @return Случайное количество денег в банке.
+     */
     private double generateTotalMoney() {
         return new Random().nextInt(TOTAL_MONEY_BOUND);
     }
 
-    // вычисление процентной ставки. ставка не должна быть выше 20%,
-    // чем выше рейтинг банка, тем ниже ставка
+    /**
+     * Вычисление процентной ставки по кредитам.
+     *
+     * @param rating Рейтинг банка.
+     * @return Процентная ставка.
+     */
     private double calculateInterestRate(int rating) {
         return MAX_RATE - (rating / DIVIDER);
     }
 
-    // чтение банка (cRud)
+    /**
+     * Чтение банка по его идентификатору.
+     *
+     * @param id Идентификатор банка.
+     * @return Банк, если он найден, иначе - пустой Optional.
+     */
     public Optional<Bank> getBankById(int id) {
         return banks.stream()
                 .filter(bank -> bank.getId() == id)
                 .findFirst();
     }
 
-    // чтение всех банков (cRud)
+    /**
+     * Чтение всех банков.
+     *
+     * @return Список всех банков.
+     */
     public List<Bank> getAllBanks() {
         return new ArrayList<>(banks);
     }
 
-    // обновление банка по id (crUd)
+    /**
+     * Обновление информации о банке по его идентификатору.
+     *
+     * @param id   Идентификатор банка.
+     * @param name Новое название банка.
+     */
     public void updateBank(int id, String name) {
         Bank bank = getBankIfExists(id);
         bank.setName(name);
     }
 
-    // удаление банка по id (cruD)
+    /**
+     * Удаление банка по его идентификатору.
+     *
+     * @param id Идентификатор банка.
+     */
     public void deleteBank(int id) {
         Bank bank = getBankIfExists(id);
         banks.remove(bank);
         userService.deleteBank(bank);
     }
 
-    // получение банка по id, если он существует,
-    // иначе - проброс ошибки
+    /**
+     * Получение банка по идентификатору, если он существует.
+     *
+     * @param id Идентификатор банка.
+     * @return Банк, если он найден.
+     * @throws NoSuchElementException Если банк не найден.
+     */
     public Bank getBankIfExists(int id) {
-        Optional<Bank> bankOptional = getBankById(id);
-        if(bankOptional.isEmpty()) {
-            throw new RuntimeException("Bank was not found");
-        }
-        return bankOptional.get();
+        return getBankById(id).orElseThrow(() -> new NoSuchElementException("Bank was not found"));
     }
 
-    // Увеличение количества офисов
+    /**
+     * Увеличение количества офисов в банке.
+     *
+     * @param bank Банк, для которого нужно увеличить количество офисов.
+     */
     public void addOffice(Bank bank) {
         bank.setOfficeCount(bank.getOfficeCount() + 1);
     }
 
-    // Увеличение количества банкоматов
+    /**
+     * Увеличение количества банкоматов в банке.
+     *
+     * @param bank Банк, для которого нужно увеличить количество банкоматов.
+     */
     public void addAtm(Bank bank) {
         bank.setAtmCount(bank.getAtmCount() + 1);
     }
 
-    // Увеличение количества сотрудников
+    /**
+     * Увеличение количества сотрудников в банке.
+     *
+     * @param bank Банк, для которого нужно увеличить количество сотрудников.
+     */
     public void addEmployee(Bank bank) {
         bank.setEmployeeCount(bank.getEmployeeCount() + 1);
     }
 
-    // Увеличение количества клиентов
+    /**
+     * Увеличение количества клиентов в банке.
+     *
+     * @param bank Банк, для которого нужно увеличить количество клиентов.
+     */
     public void addClient(Bank bank) {
         bank.setClientCount(bank.getClientCount() + 1);
     }
 
-    // Уменьшение количества офисов
+    /**
+     * Уменьшение количества офисов в банке.
+     *
+     * @param bank Банк, для которого нужно уменьшить количество офисов.
+     */
     public void removeOffice(Bank bank) {
         bank.setOfficeCount(bank.getOfficeCount() - 1);
     }
 
-    // Уменьшение количества банкоматов
+    /**
+     * Уменьшение количества банкоматов в банке.
+     *
+     * @param bank Банк, для которого нужно уменьшить количество банкоматов.
+     */
     public void removeAtm(Bank bank) {
         bank.setAtmCount(bank.getAtmCount() - 1);
     }
 
-    // Уменьшение количества работников
+    /**
+     * Уменьшение количества сотрудников в банке.
+     *
+     * @param bank Банк, для которого нужно уменьшить количество сотрудников.
+     */
     public void removeEmployee(Bank bank) {
         bank.setEmployeeCount(bank.getEmployeeCount() - 1);
     }
 
-    // Уменьшение количества клиентов
+    /**
+     * Уменьшение количества клиентов в банке.
+     *
+     * @param bank Банк, для которого нужно уменьшить количество клиентов.
+     */
     public void removeClient(Bank bank) {
         bank.setClientCount(bank.getClientCount() - 1);
     }

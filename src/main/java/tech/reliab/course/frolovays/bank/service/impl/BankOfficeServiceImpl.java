@@ -8,6 +8,7 @@ import tech.reliab.course.frolovays.bank.service.BankService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Random;
 
@@ -23,7 +24,19 @@ public class BankOfficeServiceImpl implements BankOfficeService {
         this.bankService = bankService;
     }
 
-    // создание офиса банка (Crud)
+    /**
+     * Создание нового офиса банка.
+     *
+     * @param name           Название офиса.
+     * @param address        Адрес офиса.
+     * @param canPlaceAtm   Возможность размещения банкомата в офисе.
+     * @param canIssueLoan Возможность выдачи кредитов в офисе.
+     * @param cashWithdrawal Возможность снятия наличных в офисе.
+     * @param cashDeposit    Возможность пополнения счета в офисе.
+     * @param rentCost       Стоимость аренды офиса.
+     * @param bank           Банк, которому принадлежит офис.
+     * @return Созданный офис банка.
+     */
     public BankOffice createBankOffice(String name, String address, boolean canPlaceAtm,
                                        boolean canIssueLoan, boolean cashWithdrawal, boolean cashDeposit,
                                        double rentCost, Bank bank) {
@@ -37,35 +50,63 @@ public class BankOfficeServiceImpl implements BankOfficeService {
         return bankOffice;
     }
 
-    // генерация статуса офиса
+    /**
+     * Генерация случайного статуса офиса банка.
+     *
+     * @return Случайный статус офиса банка.
+     */
     private BankOfficeStatus generateStatus() {
         return BankOfficeStatus.randomStatus();
     }
 
-    // генерация количества денег в офисе
+    /**
+     * Генерация случайного количества денег в офисе банка.
+     *
+     * @param bank Банк, которому принадлежит офис.
+     * @return Случайное количество денег в офисе банка.
+     */
     private double generateOfficeMoney(Bank bank) {
         return new Random().nextDouble(bank.getTotalMoney());
     }
 
-    // поиск офиса по id (cRud)
+    /**
+     * Поиск офиса банка по его идентификатору.
+     *
+     * @param id Идентификатор офиса банка.
+     * @return Офис банка, если он найден, иначе - пустой Optional.
+     */
     public Optional<BankOffice> getBankOfficeById(int id) {
         return bankOffices.stream()
                 .filter(bankOffice -> bankOffice.getId() == id)
                 .findFirst();
     }
 
-    // чтение всех офисов (cRud)
+    /**
+     * Чтение всех офисов банка.
+     *
+     * @return Список всех офисов банка.
+     */
     public List<BankOffice> getAllBankOffices() {
         return new ArrayList<>(bankOffices);
     }
 
-    // обновление офиса по id (crUd)
+    /**
+     * Обновление информации об офисе банка по его идентификатору.
+     *
+     * @param id   Идентификатор офиса банка.
+     * @param name Новое название офиса банка.
+     */
     public void updateBankOffice(int id, String name) {
         BankOffice bankOffice = getBankOfficeIfExists(id);
         bankOffice.setName(name);
     }
 
-    // удаление офиса по id (cruD)
+    /**
+     * Удаление офиса банка по его идентификатору и идентификатору банка.
+     *
+     * @param officeId Идентификатор офиса банка.
+     * @param bankId   Идентификатор банка, которому принадлежит офис.
+     */
     public void deleteBankAtm(int officeId, int bankId) {
         BankOffice bankOffice = getBankOfficeIfExists(officeId);
         bankOffices.remove(bankOffice);
@@ -73,13 +114,14 @@ public class BankOfficeServiceImpl implements BankOfficeService {
         bankService.removeOffice(bank);
     }
 
-    // получение офиса по id, если он существует,
-    // иначе - проброс ошибки
+    /**
+     * Получение офиса банка по его идентификатору, если он существует.
+     *
+     * @param id Идентификатор офиса банка.
+     * @return Офис банка, если он найден.
+     * @throws NoSuchElementException Если офис банка не найден.
+     */
     private BankOffice getBankOfficeIfExists(int id) {
-        Optional<BankOffice> bankOfficeOptional = getBankOfficeById(id);
-        if(bankOfficeOptional.isEmpty()) {
-            throw new RuntimeException("BankOffice was not found");
-        }
-        return bankOfficeOptional.get();
+        return getBankOfficeById(id).orElseThrow(() -> new NoSuchElementException("BankOffice was not found"));
     }
 }

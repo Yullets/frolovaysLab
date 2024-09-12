@@ -12,6 +12,7 @@ import tech.reliab.course.frolovays.bank.service.UserService;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 public class CreditAccountServiceImpl implements CreditAccountService {
@@ -28,7 +29,19 @@ public class CreditAccountServiceImpl implements CreditAccountService {
         this.bankService = bankService;
     }
 
-    // создание кредитного аккаунта (Crud)
+    /**
+     * Создание нового кредитного аккаунта.
+     *
+     * @param user              Пользователь, которому принадлежит аккаунт.
+     * @param bank              Банк, который предоставляет кредит.
+     * @param startDate         Дата начала кредита.
+     * @param loanTermMonths    Срок кредита в месяцах.
+     * @param loanAmount        Сумма кредита.
+     * @param interestRate      Процентная ставка по кредиту.
+     * @param employee          Сотрудник, который выдал кредит.
+     * @param paymentAccount    Платежный аккаунт пользователя.
+     * @return Созданный кредитный аккаунт.
+     */
     public CreditAccount createCreditAccount(User user, Bank bank, LocalDate startDate, int loanTermMonths,
                                              double loanAmount, double interestRate, Employee employee,
                                              PaymentAccount paymentAccount) {
@@ -44,17 +57,37 @@ public class CreditAccountServiceImpl implements CreditAccountService {
         return creditAccount;
     }
 
-    // вычисление даты окончания кредита
+    /**
+     * Вычисление даты окончания кредита.
+     *
+     * @param startDate         Дата начала кредита.
+     * @param loanTermMonths    Срок кредита в месяцах.
+     * @return Дата окончания кредита.
+     */
     private LocalDate calculateEndDate(LocalDate startDate, int loanTermMonths) {
         return startDate.plusMonths(loanTermMonths);
     }
 
-    // расчет аннуитетного платежа
+    /**
+     * Расчет аннуитетного платежа по кредиту.
+     *
+     * @param interestRate      Процентная ставка по кредиту.
+     * @param loanAmount        Сумма кредита.
+     * @param loanTermMonths    Срок кредита в месяцах.
+     * @return Размер аннуитетного платежа.
+     */
     private double calculateMonthlyPayment(double interestRate, double loanAmount, int loanTermMonths) {
         double monthlyRate = interestRate / 12 / 100;
         return loanAmount * (monthlyRate / (1 - Math.pow(1 + monthlyRate, -loanTermMonths)));
     }
 
+    /**
+     * Расчет суммы кредита, не превышающей доступных средств банка.
+     *
+     * @param loanAmount Сумма кредита, запрошенная пользователем.
+     * @param bank      Банк, который предоставляет кредит.
+     * @return Сумма кредита, не превышающая доступные средства банка.
+     */
     private double calculateLoanAmount(double loanAmount, Bank bank) {
         if (loanAmount > bank.getTotalMoney()) {
             loanAmount = bank.getTotalMoney();
@@ -62,7 +95,13 @@ public class CreditAccountServiceImpl implements CreditAccountService {
         return loanAmount;
     }
 
-    // рассчет кредитного рейтинга
+    /**
+     * Расчет процентной ставки по кредиту, не превышающей процентную ставку банка.
+     *
+     * @param interestRate Процентная ставка по кредиту, запрошенная пользователем.
+     * @param bank        Банк, который предоставляет кредит.
+     * @return Процентная ставка по кредиту, не превышающая процентную ставку банка.
+     */
     private double calculateInterestRate(double interestRate, Bank bank) {
         if (interestRate > bank.getInterestRate()) {
             System.out.println("Заданная процентная ставка превышает процентную ставку банка. Ставка будет скорректирована.");
@@ -71,25 +110,44 @@ public class CreditAccountServiceImpl implements CreditAccountService {
         return interestRate;
     }
 
-    // чтение аккаунта (cRud)
+    /**
+     * Чтение кредитного аккаунта по его идентификатору.
+     *
+     * @param id Идентификатор кредитного аккаунта.
+     * @return Кредитный аккаунт, если он найден, иначе - пустой Optional.
+     */
     public Optional<CreditAccount> getCreditAccountById(int id) {
         return creditAccounts.stream()
                 .filter(creditAccount -> creditAccount.getId() == id)
                 .findFirst();
     }
 
-    // чтение всех аккаунтов (cRud)
+    /**
+     * Чтение всех кредитных аккаунтов.
+     *
+     * @return Список всех кредитных аккаунтов.
+     */
     public List<CreditAccount> getAllCreditAccounts() {
         return new ArrayList<>(creditAccounts);
     }
 
-    // обновление аккаунта по id (crUd)
+    /**
+     * Обновление информации о кредитном аккаунте по его идентификатору.
+     *
+     * @param id   Идентификатор кредитного аккаунта.
+     * @param bank Банк, который предоставляет кредит.
+     */
     public void updateCreditAccount(int id, Bank bank) {
         CreditAccount creditAccount = getCreditAccountIfExists(id);
         creditAccount.setBank(bank);
     }
 
-    // удаление аккаунта по id (cruD)
+    /**
+     * Удаление кредитного аккаунта по его идентификатору и идентификатору пользователя.
+     *
+     * @param accountId Идентификатор кредитного аккаунта.
+     * @param userId     Идентификатор пользователя, которому принадлежит аккаунт.
+     */
     public void deleteCreditAccount(int accountId, int userId) {
         CreditAccount creditAccount = getCreditAccountIfExists(accountId);
         creditAccounts.remove(creditAccount);
@@ -97,13 +155,14 @@ public class CreditAccountServiceImpl implements CreditAccountService {
         userService.deleteCreditAccount(creditAccount, user);
     }
 
-    // получение аккаунта по id, если он существует,
-    // иначе - проброс ошибки
+    /**
+     * Получение кредитного аккаунта по его идентификатору, если он существует.
+     *
+     * @param id Идентификатор кредитного аккаунта.
+     * @return Кредитный аккаунт, если он найден.
+     * @throws NoSuchElementException Если кредитный аккаунт не найден.
+     */
     private CreditAccount getCreditAccountIfExists(int id) {
-        Optional<CreditAccount> creditAccountOptional = getCreditAccountById(id);
-        if(creditAccountOptional.isEmpty()) {
-            throw new RuntimeException("CreditAccount was not found");
-        }
-        return creditAccountOptional.get();
+        return getCreditAccountById(id).orElseThrow(() -> new NoSuchElementException("CreditAccount was not found"));
     }
 }

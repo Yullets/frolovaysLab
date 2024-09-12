@@ -9,6 +9,7 @@ import tech.reliab.course.frolovays.bank.service.UserService;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Random;
 
@@ -21,7 +22,14 @@ public class UserServiceImpl implements UserService {
 
     private List<User> users = new ArrayList<>();
 
-    // создание юзера (Crud)
+    /**
+     * Создание нового пользователя.
+     *
+     * @param fullName   Полное имя пользователя.
+     * @param birthDate Дата рождения пользователя.
+     * @param job        Профессия пользователя.
+     * @return Созданный пользователь.
+     */
     public User createUser(String fullName, LocalDate birthDate, String job) {
         User user = new User(fullName, birthDate, job);
         user.setId(usersCount++);
@@ -31,85 +39,143 @@ public class UserServiceImpl implements UserService {
         return user;
     }
 
-    // генерация месячного дохода
+    /**
+     * Генерация случайного месячного дохода пользователя.
+     *
+     * @return Случайный месячный доход.
+     */
     private int generateMonthlyIncome() {
         return new Random().nextInt(MONTHLY_INCOME_BOUND);
     }
 
-    // генерация кредитного рейтинга
+    /**
+     * Генерация кредитного рейтинга пользователя,
+     * основанного на его месячном доходе.
+     *
+     * @param monthlyIncome Месячный доход пользователя.
+     * @return Кредитный рейтинг пользователя.
+     */
     private int generateCreditRating(double monthlyIncome) {
         return (int) Math.ceil(monthlyIncome / DIVIDER) * FACTOR;
     }
 
-    // чтение юзера (cRud)
+    /**
+     * Чтение пользователя по его идентификатору.
+     *
+     * @param id Идентификатор пользователя.
+     * @return Пользователь, если он найден, иначе - пустой Optional.
+     */
     public Optional<User> getUserById(int id) {
         return users.stream()
                 .filter(user -> user.getId() == id)
                 .findFirst();
     }
 
-    // чтение всех юзеров (cRud)
+    /**
+     * Чтение всех пользователей.
+     *
+     * @return Список всех пользователей.
+     */
     public List<User> getAllUsers() {
         return new ArrayList<>(users);
     }
 
-    // обновление юзера по id (crUd)
+    /**
+     * Обновление информации о пользователе по его идентификатору.
+     *
+     * @param id   Идентификатор пользователя.
+     * @param name Новое имя пользователя.
+     */
     public void updateUser(int id, String name) {
         User user = getUserIfExists(id);
         user.setFullName(name);
     }
 
-    // удаление юзера по id (cruD)
+    /**
+     * Удаление пользователя по его идентификатору.
+     *
+     * @param id Идентификатор пользователя.
+     */
     public void deleteUser(int id) {
         users.remove(getUserIfExists(id));
     }
 
-    // получение юзера по id, если он существует,
-    // иначе - проброс ошибки
+    /**
+     * Получение пользователя по его идентификатору, если он существует.
+     *
+     * @param id Идентификатор пользователя.
+     * @return Пользователь, если он найден.
+     * @throws NoSuchElementException Если пользователь не найден.
+     */
     public User getUserIfExists(int id) {
-        Optional<User> userOptional = getUserById(id);
-        if(userOptional.isEmpty()) {
-            throw new RuntimeException("User was not found");
-        }
-        return userOptional.get();
+        return getUserById(id).orElseThrow(() -> new NoSuchElementException("User was not found"));
     }
 
-    // добавление кредитного аккаунта
+    /**
+     * Добавление кредитного аккаунта пользователю.
+     *
+     * @param creditAccount Кредитный аккаунт.
+     * @param user         Пользователь, которому принадлежит аккаунт.
+     */
     public void addCreditAccount(CreditAccount creditAccount, User user) {
         List<CreditAccount> creditAccounts = user.getCreditAccounts();
         creditAccounts.add(creditAccount);
         user.setCreditAccounts(creditAccounts);
     }
 
-    // добавление платежного аккаунта
+    /**
+     * Добавление платежного аккаунта пользователю.
+     *
+     * @param paymentAccount Платежный аккаунт.
+     * @param user           Пользователь, которому принадлежит аккаунт.
+     */
     public void addPaymentAccount(PaymentAccount paymentAccount, User user) {
         List<PaymentAccount> paymentAccounts = user.getPaymentAccounts();
         paymentAccounts.add(paymentAccount);
         user.setPaymentAccounts(paymentAccounts);
     }
 
-    // добавление банка
+    /**
+     * Добавление банка к списку банков пользователя.
+     *
+     * @param bank Банк.
+     * @param user Пользователь, которому добавляется банк.
+     */
     public void addBank(Bank bank, User user) {
         List<Bank> banks = user.getBanks();
         banks.add(bank);
         user.setBanks(banks);
     }
 
-    // удаление кредитного аккаунта
+    /**
+     * Удаление кредитного аккаунта у пользователя.
+     *
+     * @param creditAccount Кредитный аккаунт.
+     * @param user         Пользователь, у которого удаляется аккаунт.
+     */
     public void deleteCreditAccount(CreditAccount creditAccount, User user) {
         List<CreditAccount> creditAccounts = user.getCreditAccounts();
         creditAccounts.remove(creditAccount);
         user.setCreditAccounts(creditAccounts);
     }
 
-    // удаление платежного аккаунта
+    /**
+     * Удаление платежного аккаунта у пользователя.
+     *
+     * @param paymentAccount Платежный аккаунт.
+     * @param user           Пользователь, у которого удаляется аккаунт.
+     */
     public void deletePaymentAccount(PaymentAccount paymentAccount, User user) {
         List<PaymentAccount> paymentAccounts = user.getPaymentAccounts();
         paymentAccounts.remove(paymentAccount);
         user.setPaymentAccounts(paymentAccounts);
     }
 
-    // удаление банка
+    /**
+     * Удаление банка из списка банков пользователей.
+     *
+     * @param bank Банк, который нужно удалить.
+     */
     public void deleteBank(Bank bank) {
         for(User curUser: users) {
             List<Bank> banks = curUser.getBanks();
