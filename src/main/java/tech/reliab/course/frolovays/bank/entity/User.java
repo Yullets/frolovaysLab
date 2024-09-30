@@ -1,77 +1,57 @@
 package tech.reliab.course.frolovays.bank.entity;
 
+import jakarta.persistence.*;
+import lombok.*;
+
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
+@Entity
+@Builder
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Table(name = "users")
 public class User {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private int id;
+
+    @Column(nullable = false)
     private String fullName;
+
+    @Column(nullable = false)
     private LocalDate birthDate;
+
+    @Column(nullable = false)
     private String job;
+
+    @Column(nullable = false)
     private double monthlyIncome;
+
+    @Column(nullable = false)
     private int creditRating;
-    private List<Bank> banks = new ArrayList<>();
-    private List<CreditAccount> creditAccounts = new ArrayList<>();
-    private List<PaymentAccount> paymentAccounts = new ArrayList<>();
+
+    @ManyToMany
+    @JoinTable(
+            name = "user_banks",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "bank_id")
+    )
+    private List<Bank> banks;
+
+    @OneToMany(mappedBy = "user")
+    private List<CreditAccount> creditAccounts;
+
+    @OneToMany(mappedBy = "user")
+    private List<PaymentAccount> paymentAccounts;
 
     public User(String fullName, LocalDate birthDate, String job) {
         this.fullName = fullName;
         this.birthDate = birthDate;
         this.job = job;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public String getFullName() {
-        return fullName;
-    }
-
-    public double getMonthlyIncome() {
-        return monthlyIncome;
-    }
-
-    public List<CreditAccount> getCreditAccounts() {
-        return creditAccounts;
-    }
-
-    public List<PaymentAccount> getPaymentAccounts() {
-        return paymentAccounts;
-    }
-
-    public List<Bank> getBanks() {
-        return banks;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
-
-    public void setMonthlyIncome(double monthlyIncome) {
-        this.monthlyIncome = monthlyIncome;
-    }
-
-    public void setCreditRating(int creditRating) {
-        this.creditRating = creditRating;
-    }
-
-    public void setCreditAccounts(List<CreditAccount> creditAccounts) {
-        this.creditAccounts = creditAccounts;
-    }
-
-    public void setPaymentAccounts(List<PaymentAccount> paymentAccounts) {
-        this.paymentAccounts = paymentAccounts;
-    }
-
-    public void setBanks(List<Bank> banks) {
-        this.banks = banks;
     }
 
     @Override

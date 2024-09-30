@@ -1,18 +1,52 @@
 package tech.reliab.course.frolovays.bank.entity;
 
+import jakarta.persistence.*;
+import lombok.*;
+
+@Entity
+@Builder
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Table(name = "bank_atms")
 public class BankAtm {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private int id;
+
+    @Column(nullable = false)
     private String name;
+
+    @Column(nullable = false)
     private String address;
-    private BankAtmStatus status;
-    private Bank bank;
-    private BankOffice location;
-    private Employee employee;
+
+    @Column(nullable = false)
     private boolean cashWithdrawal;
+
+    @Column(nullable = false)
     private boolean cashDeposit;
+
+    @Column(nullable = false)
     private double atmMoney;
+
+    @Column(nullable = false)
     private double maintenanceCost;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private BankAtmStatus status;
+
+    @ManyToOne
+    @JoinColumn(name = "location_id")
+    private BankOffice location;
+
+    @ManyToOne
+    private Employee employee;
+
+    @ManyToOne
+    private Bank bank;
 
     public BankAtm(String name, String address, Bank bank, BankOffice location, Employee employee, boolean cashWithdrawal, boolean cashDeposit, double maintenanceCost) {
         this.name = name;
@@ -23,30 +57,6 @@ public class BankAtm {
         this.cashWithdrawal = cashWithdrawal;
         this.cashDeposit = cashDeposit;
         this.maintenanceCost = maintenanceCost;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public Bank getBank() {
-        return bank;
-    }
-
-    public void setStatus(BankAtmStatus status) {
-        this.status = status;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public void setAtmMoney(double atmMoney) {
-        this.atmMoney = atmMoney;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     @Override

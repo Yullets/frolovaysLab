@@ -1,0 +1,49 @@
+databaseChangeLog:
+  - changeSet:
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: users
+      id: 5
+      author: Yulia
+      changes:
+        - createSequence:
+            sequenceName: users_seq
+            startValue: 1
+            incrementBy: 50
+        - createTable:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: full_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: birth_date
+                  type: date
+                  constraints:
+                    nullable: false
+              - column:
+                  name: job
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: monthly_income
+                  type: decimal(15, 2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: credit_rating
+                  type: int
+                  constraints:
+                    nullable: false

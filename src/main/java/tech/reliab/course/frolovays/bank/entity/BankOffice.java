@@ -1,18 +1,59 @@
 package tech.reliab.course.frolovays.bank.entity;
 
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.util.List;
+
+@Entity
+@Builder
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Table(name = "bank_offices")
 public class BankOffice {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private int id;
+
+    @Column(nullable = false)
     private String name;
+
+    @Column(nullable = false)
     private String address;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private BankOfficeStatus status;
+
+    @Column(nullable = false)
     private boolean canPlaceAtm;
-    private int atmCount = 0;
+
+    @Column(nullable = false)
     private boolean canIssueLoan;
+
+    @Column(nullable = false)
     private boolean cashWithdrawal;
+
+    @Column(nullable = false)
     private boolean cashDeposit;
+
+    @Column(nullable = false)
     private double officeMoney;
+
+    @Column(nullable = false)
     private double rentCost;
+
+    @OneToMany(mappedBy = "location")
+    private List<BankAtm> atms;
+
+    @ManyToOne
+    private Bank bank;
+
+    @OneToMany(mappedBy = "bankOffice")
+    private List<Employee> employees;
 
     public BankOffice(String name, String address, boolean canPlaceAtm, boolean canIssueLoan, boolean cashWithdrawal, boolean cashDeposit, double rentCost, Bank bank) {
         this.name = name;
@@ -22,46 +63,6 @@ public class BankOffice {
         this.cashWithdrawal = cashWithdrawal;
         this.cashDeposit = cashDeposit;
         this.rentCost = rentCost;
-    }
-
-    public void setStatus(BankOfficeStatus status) {
-        this.status = status;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public void setOfficeMoney(double officeMoney) {
-        this.officeMoney = officeMoney;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public String toString() {
-        return "BankOffice{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", address='" + address + '\'' +
-                ", status=" + status +
-                ", canPlaceAtm=" + canPlaceAtm +
-                ", atmCount=" + atmCount +
-                ", canIssueLoan=" + canIssueLoan +
-                ", cashWithdrawal=" + cashWithdrawal +
-                ", cashDeposit=" + cashDeposit +
-                ", officeMoney=" + officeMoney +
-                ", rentCost=" + rentCost +
-                '}';
+        this.bank = bank;
     }
 }

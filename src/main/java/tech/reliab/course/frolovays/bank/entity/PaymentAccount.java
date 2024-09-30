@@ -1,36 +1,34 @@
 package tech.reliab.course.frolovays.bank.entity;
 
+import jakarta.persistence.*;
+import lombok.*;
+
+@Entity
+@Builder
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Table(name = "payment_accounts")
 public class PaymentAccount {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private int id;
+
+    @ManyToOne
     private User user;
+
+    @ManyToOne
     private Bank bank;
-    private double balance = 0;
+
+    @Column(nullable = false)
+    private double balance;
 
     public PaymentAccount(User user, Bank bank) {
         this.user = user;
         this.bank = bank;
         this.balance = 0;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public Bank getBank() {
-        return bank;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public void setBank(Bank bank) {
-        this.bank = bank;
     }
 
     @Override

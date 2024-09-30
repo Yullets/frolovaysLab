@@ -1,24 +1,23 @@
 package tech.reliab.course.frolovays.bank.service;
 
-import tech.reliab.course.frolovays.bank.entity.Bank;
 import tech.reliab.course.frolovays.bank.entity.BankAtm;
-import tech.reliab.course.frolovays.bank.entity.BankOffice;
-import tech.reliab.course.frolovays.bank.entity.Employee;
+import tech.reliab.course.frolovays.bank.model.BankAtmRequest;
+import tech.reliab.course.frolovays.bank.web.dto.BankAtmDto;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface BankAtmService {
-    BankAtm createBankAtm(String name, String address, Bank bank, BankOffice location, Employee employee,
-                          boolean cashWithdrawal, boolean cashDeposit, double maintenanceCost);
+    BankAtmDto createBankAtm(BankAtmRequest bankAtmRequest);
 
-    Optional<BankAtm> getBankAtmById(int id);
+    BankAtm getBankAtmById(int id);
 
-    List<BankAtm> getAllBankAtms();
+    BankAtmDto getBankAtmDtoById(int id);
 
-    List<BankAtm> getAllBankAtmsByBank(Bank bank);
+    List<BankAtmDto> getAllBankAtms();
 
-    void updateBankAtm(int id, String name);
+    List<BankAtmDto> getAllBankAtmsByBankId(int bankId);
+
+    BankAtmDto updateBankAtm(int id, String name);
 
     void deleteBankAtm(int id);
 }

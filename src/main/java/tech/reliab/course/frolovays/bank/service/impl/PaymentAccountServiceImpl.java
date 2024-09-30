@@ -1,78 +1,73 @@
 package tech.reliab.course.frolovays.bank.service.impl;
 
-import tech.reliab.course.frolovays.bank.entity.Bank;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 import tech.reliab.course.frolovays.bank.entity.PaymentAccount;
-import tech.reliab.course.frolovays.bank.entity.User;
+import tech.reliab.course.frolovays.bank.model.PaymentAccountRequest;
+import tech.reliab.course.frolovays.bank.repository.PaymentAccountRepository;
 import tech.reliab.course.frolovays.bank.service.BankService;
 import tech.reliab.course.frolovays.bank.service.PaymentAccountService;
 import tech.reliab.course.frolovays.bank.service.UserService;
+import tech.reliab.course.frolovays.bank.service.mapper.PaymentAccountMapper;
+import tech.reliab.course.frolovays.bank.web.dto.PaymentAccountDto;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
+@Service
+@RequiredArgsConstructor
 public class PaymentAccountServiceImpl implements PaymentAccountService {
 
-    private static int paymentAccountCount = 0;
-
+    private final PaymentAccountRepository paymentAccountRepository;
     private final UserService userService;
     private final BankService bankService;
-
-    private List<PaymentAccount> paymentAccounts = new ArrayList<>();
-
-    public PaymentAccountServiceImpl (UserService userService, BankService bankService) {
-        this.userService = userService;
-        this.bankService = bankService;
-    }
+    private final PaymentAccountMapper paymentAccountMapper;
 
     /**
      * Создание нового платежного аккаунта.
      *
-     * @param user Пользователь, которому принадлежит аккаунт.
-     * @param bank Банк, в котором открыт аккаунт.
+     * @param paymentAccountRequest содержит информацию о userId и bankId
      * @return Созданный платежный аккаунт.
      */
-    public PaymentAccount createPaymentAccount(User user, Bank bank) {
-        PaymentAccount paymentAccount = new PaymentAccount(user, bank);
-        paymentAccount.setId(paymentAccountCount++);
-        paymentAccounts.add(paymentAccount);
-        userService.addPaymentAccount(paymentAccount, user);
-        userService.addBank(bank, user);
-        bankService.addClient(bank);
-        return paymentAccount;
+    public PaymentAccountDto createPaymentAccount(PaymentAccountRequest paymentAccountRequest) {
+        PaymentAccount paymentAccount = new PaymentAccount(userService.getUserById(paymentAccountRequest.getUserId()),
+                bankService.getBankById(paymentAccountRequest.getBankId()));
+        return paymentAccountMapper.toDto(paymentAccountRepository.save(paymentAccount));
     }
 
     /**
      * Чтение платежного аккаунта по его идентификатору.
      *
      * @param id Идентификатор платежного аккаунта.
-     * @return Платежный аккаунт, если он найден, иначе - пустой Optional.
+     * @return Платежный аккаунт
+     * @throws NoSuchElementException Если платежный аккаунт не найден.
      */
-    public Optional<PaymentAccount> getPaymentAccountById(int id) {
-        return paymentAccounts.stream()
-                .filter(paymentAccount -> paymentAccount.getId() == id)
-                .findFirst();
+    public PaymentAccount getPaymentAccountById(int id) {
+        return paymentAccountRepository.findById(id).orElseThrow(() -> new NoSuchElementException("PaymentAccount was not found"));
     }
 
+    public PaymentAccountDto getPaymentAccountDtoById(int id) {
+        return paymentAccountMapper.toDto(getPaymentAccountById(id));
+    }
     /**
      * Чтение всех платежных аккаунтов.
      *
      * @return Список всех платежных аккаунтов.
      */
-    public List<PaymentAccount> getAllPaymentAccounts() {
-        return new ArrayList<>(paymentAccounts);
+    public List<PaymentAccountDto> getAllPaymentAccounts() {
+        return paymentAccountMapper.toDtoList(paymentAccountRepository.findAll());
     }
 
     /**
      * Обновление информации о платежном аккаунте по его идентификатору.
      *
      * @param id   Идентификатор платежного аккаунта.
-     * @param bank Банк, в котором открыт аккаунт.
+     * @param bankId id банка, в котором открыт аккаунт.
      */
-    public void updatePaymentAccount(int id, Bank bank) {
-        PaymentAccount paymentAccount = getPaymentAccountIfExists(id);
-        paymentAccount.setBank(bank);
+    public PaymentAccountDto updatePaymentAccount(int id, int bankId) {
+        PaymentAccount paymentAccount = getPaymentAccountById(id);
+        paymentAccount.setBank(bankService.getBankById(bankId));
+        return paymentAccountMapper.toDto(paymentAccountRepository.save(paymentAccount));
     }
 
     /**
@@ -81,19 +76,6 @@ public class PaymentAccountServiceImpl implements PaymentAccountService {
      * @param id Идентификатор платежного аккаунта.
      */
     public void deletePaymentAccount(int id) {
-        PaymentAccount paymentAccount = getPaymentAccountIfExists(id);
-        paymentAccounts.remove(paymentAccount);
-        userService.deletePaymentAccount(paymentAccount, paymentAccount.getUser());
-    }
-
-    /**
-     * Получение платежного аккаунта по его идентификатору, если он существует.
-     *
-     * @param id Идентификатор платежного аккаунта.
-     * @return Платежный аккаунт, если он найден.
-     * @throws NoSuchElementException Если платежный аккаунт не найден.
-     */
-    private PaymentAccount getPaymentAccountIfExists(int id) {
-        return getPaymentAccountById(id).orElseThrow(() -> new NoSuchElementException("PaymentAccount was not found"));
+        paymentAccountRepository.deleteById(id);
     }
 }

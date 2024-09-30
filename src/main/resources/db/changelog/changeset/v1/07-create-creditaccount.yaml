@@ -1,0 +1,82 @@
+databaseChangeLog:
+  - changeSet:
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: credit_accounts
+      id: 7
+      author: Yulia
+      changes:
+        - createSequence:
+            sequenceName: credit_accounts_seq
+            startValue: 1
+            incrementBy: 50
+        - createTable:
+            tableName: credit_accounts
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: start_date
+                  type: date
+                  constraints:
+                    nullable: false
+              - column:
+                  name: end_date
+                  type: date
+                  constraints:
+                    nullable: false
+              - column:
+                  name: loan_term_months
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: loan_amount
+                  type: decimal(15, 2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: monthly_payment
+                  type: decimal(15, 2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: interest_rate
+                  type: decimal(5, 2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: employee_id
+                  type: int
+                  constraints:
+                    foreignKeyName: employee_id
+                    referencedTableName: employees
+                    referencedColumnNames: id
+              - column:
+                  name: bank_id
+                  type: int
+                  constraints:
+                    foreignKeyName: bank_id
+                    referencedTableName: banks
+                    referencedColumnNames: id
+              - column:
+                  name: payment_account_id
+                  type: int
+                  constraints:
+                    foreignKeyName: payment_account_id
+                    referencedTableName: payment_accounts
+                    referencedColumnNames: id
+              - column:
+                  name: user_id
+                  type: int
+                  constraints:
+                    foreignKeyName: user_id
+                    referencedTableName: users
+                    referencedColumnNames: id

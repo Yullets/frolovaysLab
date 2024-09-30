@@ -1,0 +1,43 @@
+databaseChangeLog:
+  - changeSet:
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: payment_accounts
+      id: 6
+      author: Yulia
+      changes:
+        - createSequence:
+            sequenceName: payment_accounts_seq
+            startValue: 1
+            incrementBy: 50
+        - createTable:
+            tableName: payment_accounts
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: balance
+                  type: decimal(15, 2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: bank_id
+                  type: int
+                  constraints:
+                    foreignKeyName: bank_id
+                    referencedTableName: banks
+                    referencedColumnNames: id
+              - column:
+                  name: user_id
+                  type: int
+                  constraints:
+                    foreignKeyName: user_id
+                    referencedTableName: users
+                    referencedColumnNames: id

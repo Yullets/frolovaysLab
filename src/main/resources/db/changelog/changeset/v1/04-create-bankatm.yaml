@@ -1,0 +1,80 @@
+databaseChangeLog:
+  - changeSet:
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: bank_atms
+      id: 4
+      author: Yulia
+      changes:
+        - createSequence:
+            sequenceName: bank_atms_seq
+            startValue: 1
+            incrementBy: 50
+        - createTable:
+            tableName: bank_atms
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: address
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: cash_withdrawal
+                  type: boolean
+                  constraints:
+                    nullable: false
+              - column:
+                  name: cash_deposit
+                  type: boolean
+                  constraints:
+                    nullable: false
+              - column:
+                  name: atm_money
+                  type: decimal(15, 2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: maintenance_cost
+                  type: decimal(15, 2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: location_id
+                  type: int
+                  constraints:
+                    foreignKeyName: bank_office_id
+                    referencedTableName: bank_offices
+                    referencedColumnNames: id
+              - column:
+                  name: employee_id
+                  type: int
+                  constraints:
+                    foreignKeyName: employee_id
+                    referencedTableName: employees
+                    referencedColumnNames: id
+              - column:
+                  name: bank_id
+                  type: int
+                  constraints:
+                    foreignKeyName: bank_id
+                    referencedTableName: banks
+                    referencedColumnNames: id

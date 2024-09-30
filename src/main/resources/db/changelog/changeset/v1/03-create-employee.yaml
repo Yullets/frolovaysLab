@@ -1,0 +1,68 @@
+databaseChangeLog:
+  - changeSet:
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: employees
+      id: 3
+      author: Yulia
+      changes:
+        - createSequence:
+            sequenceName: employees_seq
+            startValue: 1
+            incrementBy: 50
+        - createTable:
+            tableName: employees
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: full_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: birth_date
+                  type: date
+                  constraints:
+                    nullable: false
+              - column:
+                  name: position
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: remote_work
+                  type: boolean
+                  constraints:
+                    nullable: false
+              - column:
+                  name: can_issue_loans
+                  type: boolean
+                  constraints:
+                    nullable: false
+              - column:
+                  name: salary
+                  type: decimal(15, 2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: bank_id
+                  type: int
+                  constraints:
+                    foreignKeyName: bank_id
+                    referencedTableName: banks
+                    referencedColumnNames: id
+              - column:
+                  name: bank_office_id
+                  type: int
+                  constraints:
+                    foreignKeyName: bank_office_id
+                    referencedTableName: bank_offices
+                    referencedColumnNames: id

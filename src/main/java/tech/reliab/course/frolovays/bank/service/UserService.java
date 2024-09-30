@@ -1,37 +1,22 @@
 package tech.reliab.course.frolovays.bank.service;
 
-import tech.reliab.course.frolovays.bank.entity.Bank;
-import tech.reliab.course.frolovays.bank.entity.CreditAccount;
-import tech.reliab.course.frolovays.bank.entity.PaymentAccount;
 import tech.reliab.course.frolovays.bank.entity.User;
+import tech.reliab.course.frolovays.bank.model.UserRequest;
+import tech.reliab.course.frolovays.bank.web.dto.UserDto;
 
-import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 public interface UserService {
 
-    User createUser(String fullName, LocalDate birthDate, String job);
+    UserDto createUser(UserRequest userRequest);
 
-    Optional<User> getUserById(int id);
+    User getUserById(int id);
 
-    List<User> getAllUsers();
+    UserDto getUserDtoById(int id);
 
-    void updateUser(int id, String name);
+    List<UserDto> getAllUsers();
+
+    UserDto updateUser(int id, String name);
 
     void deleteUser(int id);
-
-    User getUserIfExists(int id);
-
-    void addCreditAccount(CreditAccount creditAccount, User user);
-
-    void addPaymentAccount(PaymentAccount paymentAccount, User user);
-
-    void addBank(Bank bank, User user);
-
-    void deleteCreditAccount(CreditAccount creditAccount, User user);
-
-    void deletePaymentAccount(PaymentAccount paymentAccount, User user);
-
-    void deleteBank(Bank bank);
 }

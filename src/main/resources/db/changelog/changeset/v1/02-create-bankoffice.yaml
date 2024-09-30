@@ -1,0 +1,76 @@
+databaseChangeLog:
+  - changeSet:
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: bank_offices
+      id: 2
+      author: Yulia
+      changes:
+        - createSequence:
+            sequenceName: bank_offices_seq
+            startValue: 1
+            incrementBy: 50
+        - createTable:
+            tableName: bank_offices
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: address
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: can_place_atm
+                  type: boolean
+                  constraints:
+                    nullable: false
+              - column:
+                  name: can_issue_loan
+                  type: boolean
+                  constraints:
+                    nullable: false
+              - column:
+                  name: cash_withdrawal
+                  type: boolean
+                  constraints:
+                    nullable: false
+              - column:
+                  name: cash_deposit
+                  type: boolean
+                  constraints:
+                    nullable: false
+              - column:
+                  name: office_money
+                  type: decimal(15, 2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: rent_cost
+                  type: decimal(15, 2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: bank_id
+                  type: int
+                  constraints:
+                    foreignKeyName: bank_id
+                    referencedTableName: banks
+                    referencedColumnNames: id

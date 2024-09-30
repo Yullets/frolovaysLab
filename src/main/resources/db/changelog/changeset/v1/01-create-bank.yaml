@@ -1,0 +1,44 @@
+databaseChangeLog:
+  - changeSet:
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: banks
+      id: 1
+      author: Yulia
+      changes:
+        - createSequence:
+            sequenceName: banks_seq
+            startValue: 1
+            incrementBy: 50
+        - createTable:
+            tableName: banks
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: rating
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: total_money
+                  type: decimal(15, 2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: interest_rate
+                  type: decimal(5, 2)
+                  constraints:
+                    nullable: false

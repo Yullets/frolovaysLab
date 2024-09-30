@@ -1,37 +1,21 @@
 package tech.reliab.course.frolovays.bank.service;
 
 import tech.reliab.course.frolovays.bank.entity.Bank;
+import tech.reliab.course.frolovays.bank.web.dto.BankDto;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface BankService {
 
-    Bank createBank(String bankName);
+    BankDto createBank(String bankName);
 
-    Optional<Bank> getBankById(int id);
+    Bank getBankById(int id);
 
-    List<Bank> getAllBanks();
+    BankDto getBankDtoById(int id);
 
-    void updateBank(int id, String name);
+    List<BankDto> getAllBanks();
+
+    BankDto updateBank(int id, String name);
 
     void deleteBank(int id);
-
-    void addOffice(Bank bank);
-
-    void addAtm(Bank bank);
-
-    void addEmployee(Bank bank);
-
-    void addClient(Bank bank);
-
-    void removeOffice(Bank bank);
-
-    void removeAtm(Bank bank);
-
-    void removeEmployee(Bank bank);
-
-    void removeClient(Bank bank);
-
-    Bank getBankIfExists(int id);
 }

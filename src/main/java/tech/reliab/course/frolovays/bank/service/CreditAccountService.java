@@ -1,26 +1,22 @@
 package tech.reliab.course.frolovays.bank.service;
 
-import tech.reliab.course.frolovays.bank.entity.Bank;
 import tech.reliab.course.frolovays.bank.entity.CreditAccount;
-import tech.reliab.course.frolovays.bank.entity.Employee;
-import tech.reliab.course.frolovays.bank.entity.PaymentAccount;
-import tech.reliab.course.frolovays.bank.entity.User;
+import tech.reliab.course.frolovays.bank.model.CreditAccountRequest;
+import tech.reliab.course.frolovays.bank.web.dto.CreditAccountDto;
 
-import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 public interface CreditAccountService {
 
-    CreditAccount createCreditAccount(User user, Bank bank, LocalDate startDate, int loanTermMonths,
-                                      double loanAmount, double interestRate, Employee employee,
-                                      PaymentAccount paymentAccount);
+    CreditAccountDto createCreditAccount(CreditAccountRequest creditAccountRequest);
 
-    Optional<CreditAccount> getCreditAccountById(int id);
+    CreditAccount getCreditAccountById(int id);
 
-    List<CreditAccount> getAllCreditAccounts();
+    CreditAccountDto getCreditAccountDtoById(int id);
 
-    void updateCreditAccount(int id, Bank bank);
+    List<CreditAccountDto> getAllCreditAccounts();
 
-    void deleteCreditAccount(int accountId, int userId);
+    CreditAccountDto updateCreditAccount(int id, int bankId);
+
+    void deleteCreditAccount(int id);
 }

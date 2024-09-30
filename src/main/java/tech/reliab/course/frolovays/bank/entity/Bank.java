@@ -1,105 +1,51 @@
 package tech.reliab.course.frolovays.bank.entity;
 
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.util.List;
+
+@Entity
+@Builder
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Table(name = "banks")
 public class Bank {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private int id;
+
+    @Column(nullable = false)
     private String name;
-    private int officeCount = 0;
-    private int atmCount = 0;
-    private int employeeCount = 0;
-    private int clientCount = 0;
+
+    @Column(nullable = false)
     private int rating;
+
+    @Column(nullable = false)
     private double totalMoney;
+
+    @Column(nullable = false)
     private double interestRate;
+
+    @OneToMany(mappedBy = "bank")
+    private List<BankOffice> offices;
+
+    @OneToMany(mappedBy = "bank")
+    private List<BankAtm> atms;
+
+    @OneToMany(mappedBy = "bank")
+    private List<Employee> employees;
+
+    @OneToMany(mappedBy = "bank")
+    private List<CreditAccount> creditAccounts;
+
+    @OneToMany(mappedBy = "bank")
+    private List<PaymentAccount> paymentAccounts;
 
     public Bank(String name) {
         this.name = name;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public int getOfficeCount() {
-        return officeCount;
-    }
-
-    public int getAtmCount() {
-        return atmCount;
-    }
-
-    public int getEmployeeCount() {
-        return employeeCount;
-    }
-
-    public int getClientCount() {
-        return clientCount;
-    }
-
-    public int getRating() {
-        return rating;
-    }
-
-    public double getTotalMoney() {
-        return totalMoney;
-    }
-
-    public double getInterestRate() {
-        return interestRate;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public void setRating(int rating) {
-        this.rating = rating;
-    }
-
-    public void setTotalMoney(double totalMoney) {
-        this.totalMoney = totalMoney;
-    }
-
-    public void setInterestRate(double interestRate) {
-        this.interestRate = interestRate;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setOfficeCount(int officeCount) {
-        this.officeCount = officeCount;
-    }
-
-    public void setAtmCount(int atmCount) {
-        this.atmCount = atmCount;
-    }
-
-    public void setEmployeeCount(int employeeCount) {
-        this.employeeCount = employeeCount;
-    }
-
-    public void setClientCount(int clientCount) {
-        this.clientCount = clientCount;
-    }
-
-    @Override
-    public String toString() {
-        return "Bank{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", officeCount=" + officeCount +
-                ", atmCount=" + atmCount +
-                ", employeeCount=" + employeeCount +
-                ", clientCount=" + clientCount +
-                ", rating=" + rating +
-                ", totalMoney=" + totalMoney +
-                ", interestRate=" + interestRate +
-                '}';
     }
 }
